@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Building Mind AI OS · ESG & PropTech Intelligent Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #070c1b;
+      --bg-card: rgba(13, 22, 42, 0.8);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-active: rgba(0, 245, 255, 0.6);
+      --accent: #00f5ff;
+      --accent-glow: rgba(0, 245, 255, 0.45);
+      --accent2: #b44dff;
+      --accent2-glow: rgba(180, 77, 255, 0.4);
+      --alert-red: #ff3162;
+      --alert-orange: #ff9f2e;
+      --text-primary: #f0f4ff;
+      --text-secondary: #b0c2db;
+      --text-muted: #6b7c99;
+      --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --radius-xl: 22px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --transition-fast: 0.2s cubic-bezier(0.2, 0.9, 0.4, 1);
+      --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: radial-gradient(ellipse at 30% 20%, #13203d 0%, #070c1b 75%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 18px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-x: hidden;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      mask-image: radial-gradient(ellipse at 50% 30%, black 30%, transparent 70%);
+    }
+
+    header,
+    .dashboard-container,
+    footer,
+    .alert-overlay {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HEADER */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 6px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .header-left h1 {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1;
+      margin: 0 0 6px;
+      background: linear-gradient(135deg, #ffffff 0%, #c0e0ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header-left h1 .ai-badge {
+      background: linear-gradient(135deg, var(--accent), #8a6eff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+      margin-left: 6px;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ai-pulse {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 14px var(--accent-glow);
+      animation: aiPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes aiPulse {
+      0%,
+      100% {
+        box-shadow: 0 0 14px var(--accent-glow);
+      }
+      50% {
+        box-shadow: 0 0 28px var(--accent), 0 0 50px var(--accent-glow);
+      }
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .live-clock {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.02);
+      padding: 8px 18px;
+      border-radius: 30px;
+      border: 1px solid var(--border-subtle);
+      letter-spacing: 0.5px;
+    }
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 8px 18px;
+      border-radius: 40px;
+      letter-spacing: 0.4px;
+      border: 1px solid transparent;
+    }
+    .badge-compliance {
+      background: rgba(0, 245, 255, 0.08);
+      border-color: var(--border-active);
+      color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .badge-alert {
+      background: rgba(255, 49, 98, 0.1);
+      border-color: rgba(255, 49, 98, 0.5);
+      color: var(--alert-red);
+      box-shadow: 0 0 20px rgba(255, 49, 98, 0.3);
+      animation: alertPulse 1.1s ease-in-out infinite;
+    }
+    @keyframes alertPulse {
+      0%,
+      100% {
+        box-shadow: 0 0 20px rgba(255, 49, 98, 0.3);
+      }
+      50% {
+        box-shadow: 0 0 45px rgba(255, 49, 98, 0.65);
+      }
+    }
+
+    .demo-btn {
+      padding: 10px 20px;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+      backdrop-filter: blur(10px);
+    }
+    .demo-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(0, 245, 255, 0.08);
+      box-shadow: 0 0 22px var(--accent-glow);
+    }
+    .demo-btn.danger-btn:hover {
+      border-color: var(--alert-red);
+      color: var(--alert-red);
+      background: rgba(255, 49, 98, 0.08);
+      box-shadow: 0 0 22px rgba(255, 49, 98, 0.4);
+    }
+
+    /* FIRE OVERLAY */
+    .alert-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      background: radial-gradient(ellipse at center, rgba(255, 40, 70, 0.15) 0%, transparent 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .alert-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .alert-modal {
+      background: rgba(10, 3, 12, 0.96);
+      border: 2px solid var(--alert-red);
+      border-radius: var(--radius-xl);
+      padding: 44px 54px;
+      text-align: center;
+      box-shadow: 0 0 90px rgba(255, 49, 98, 0.5);
+      max-width: 680px;
+      backdrop-filter: blur(30px);
+    }
+    .alert-modal h2 {
+      font-size: 30px;
+      color: var(--alert-red);
+      margin-bottom: 14px;
+    }
+    .evac-route {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: #ffb3c1;
+      margin: 20px 0;
+      line-height: 1.7;
+      background: rgba(255, 0, 0, 0.06);
+      padding: 18px;
+      border-radius: var(--radius-md);
+      border: 1px dashed rgba(255, 49, 98, 0.4);
+      text-align: left;
+    }
+    .btn-dismiss {
+      margin-top: 20px;
+      padding: 12px 30px;
+      border-radius: 30px;
+      border: 1px solid var(--alert-red);
+      background: rgba(255, 49, 98, 0.12);
+      color: #ffb3c1;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      transition: all var(--transition-fast);
+    }
+    .btn-dismiss:hover {
+      background: rgba(255, 49, 98, 0.3);
+      color: #fff;
+      box-shadow: 0 0 30px rgba(255, 49, 98, 0.6);
+    }
+
+    /* DASHBOARD GRID */
+    .dashboard-container {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr 1fr;
+      gap: 18px;
+      flex: 1;
+    }
+    @media(max-width:1350px) {
+      .dashboard-container {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media(max-width:900px) {
+      .dashboard-container {
+        grid-template-columns: 1fr;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+    .col {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: all var(--transition-smooth);
+      box-shadow: 0 14px 44px rgba(0, 0, 0, 0.55);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+      pointer-events: none;
+    }
+    .card.active-highlight {
+      border-color: var(--border-active);
+      box-shadow: 0 14px 46px rgba(0, 245, 255, 0.12), inset 0 0 28px rgba(0, 245, 255, 0.03);
+    }
+    .card.alert-highlight {
+      border-color: rgba(255, 49, 98, 0.6) !important;
+      box-shadow: 0 14px 46px rgba(255, 49, 98, 0.12), inset 0 0 28px rgba(255, 49, 98, 0.03) !important;
+    }
+    .card-title {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.8px;
+      border-left: 3px solid var(--text-muted);
+      padding-left: 12px;
+      transition: border-color var(--transition-smooth);
+    }
+    .active-highlight .card-title {
+      border-left-color: var(--accent);
+      color: var(--accent);
+    }
+    .alert-highlight .card-title {
+      border-left-color: var(--alert-red);
+      color: var(--alert-red);
+    }
+
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 12px 15px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      gap: 12px;
+    }
+    .data-row .lbl {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    .data-row .val {
+      font-size: 14px;
+      font-weight: 600;
+      text-align: right;
+      font-family: var(--font-mono);
+      letter-spacing: 0.3px;
+      word-break: break-word;
+      transition: color var(--transition-fast);
+    }
+    .val-on {
+      color: var(--accent);
+      text-shadow: 0 0 12px var(--accent-glow);
+    }
+    .val-off {
+      color: var(--text-muted);
+    }
+    .val-alert {
+      color: var(--alert-red);
+      text-shadow: 0 0 12px rgba(255, 49, 98, 0.6);
+    }
+    .val-warn {
+      color: var(--alert-orange);
+    }
+
+    /* feature tags */
+    .feature-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .feature-tag {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-secondary);
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .feature-tag.ai {
+      border-color: rgba(0, 245, 255, 0.3);
+      color: var(--accent);
+      background: rgba(0, 245, 255, 0.06);
+    }
+
+    /* RADAR */
+    .radar-box {
+      position: relative;
+      width: 100%;
+      height: 150px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+    }
+    .sensor-dot {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #1f3050;
+      border: 2px solid #4d658a;
+      transition: all var(--transition-smooth);
+      z-index: 5;
+    }
+    .active-highlight .sensor-dot {
+      background: var(--accent);
+      border-color: #ffffff;
+      box-shadow: 0 0 48px var(--accent), 0 0 90px var(--accent-glow);
+    }
+    .ripple-ring {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      pointer-events: none;
+      opacity: 0;
+    }
+    @keyframes rippleExpand {
+      0% {
+        transform: scale(1);
+        opacity: 0.9;
+      }
+      100% {
+        transform: scale(5.5);
+        opacity: 0;
+      }
+    }
+    .ripple-ring.go {
+      animation: rippleExpand 0.8s cubic-bezier(0.1, 0.75, 0.2, 1) forwards;
+    }
+
+    /* HEATMAP */
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 6px;
+    }
+    .heatmap-cell {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      background: rgba(25, 40, 60, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all var(--transition-smooth);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    .heatmap-cell.hot {
+      background: rgba(0, 210, 255, 0.55);
+      border-color: rgba(0, 245, 255, 0.6);
+      color: #fff;
+      box-shadow: 0 0 18px rgba(0, 245, 255, 0.45);
+    }
+    .heatmap-cell.warm {
+      background: rgba(255, 159, 47, 0.35);
+      border-color: rgba(255, 159, 47, 0.5);
+      color: #ffe0b2;
+    }
+
+    /* TWIN */
+    .twin-stage {
+      perspective: 850px;
+      width: 100%;
+      height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .twin-building {
+      width: 130px;
+      height: 150px;
+      transform-style: preserve-3d;
+      transform: rotateX(15deg) rotateY(-24deg);
+      position: relative;
+      transition: transform 0.8s ease;
+    }
+    .twin-building:hover {
+      transform: rotateX(12deg) rotateY(-18deg);
+    }
+    .twin-floor {
+      position: absolute;
+      width: 130px;
+      height: 30px;
+      left: 0;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      transition: all var(--transition-smooth);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: rgba(255, 255, 255, 0.65);
+      background: rgba(20, 34, 56, 0.7);
+    }
+    .twin-floor.f1 {
+      bottom: 0;
+      height: 34px;
+    }
+    .twin-floor.f2 {
+      bottom: 38px;
+      height: 30px;
+    }
+    .twin-floor.f3 {
+      bottom: 72px;
+      height: 30px;
+    }
+    .twin-floor.f4 {
+      bottom: 106px;
+      height: 28px;
+    }
+    .twin-floor.highlight-floor {
+      background: rgba(0, 180, 230, 0.6) !important;
+      border-color: var(--accent) !important;
+      color: #fff !important;
+      box-shadow: 0 0 35px rgba(0, 245, 255, 0.6) !important;
+      animation: floorGlow 1.5s ease-in-out infinite;
+    }
+    @keyframes floorGlow {
+      0%,
+      100% {
+        box-shadow: 0 0 35px rgba(0, 245, 255, 0.6);
+      }
+      50% {
+        box-shadow: 0 0 65px rgba(0, 245, 255, 0.9);
+      }
+    }
+    .twin-roof {
+      position: absolute;
+      bottom: 136px;
+      left: -8px;
+      width: 146px;
+      height: 12px;
+      background: rgba(40, 55, 80, 0.8);
+      border-radius: 3px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    /* TERMINAL */
+    .terminal-card {
+      background: rgba(8, 12, 24, 0.92);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: inset 0 0 45px rgba(0, 0, 0, 0.75);
+      flex: 1;
+      min-height: 220px;
+    }
+    .terminal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #8a9bb5;
+      letter-spacing: 1.5px;
+    }
+    .terminal-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 14px var(--accent);
+      animation: dotBreathe 2s ease-in-out infinite;
+    }
+    @keyframes dotBreathe {
+      0%,
+      100% {
+        box-shadow: 0 0 14px var(--accent);
+      }
+      50% {
+        box-shadow: 0 0 32px var(--accent), 0 0 60px var(--accent-glow);
+      }
+    }
+    .terminal-stream {
+      flex: 1;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #a5d8e6;
+      line-height: 1.7;
+      max-height: 400px;
+      text-shadow: 0 0 4px rgba(165, 216, 230, 0.3);
+      padding-right: 4px;
+    }
+    .log-item {
+      margin-bottom: 7px;
+      border-left: 2px solid rgba(255, 255, 255, 0.15);
+      padding-left: 10px;
+    }
+    .log-item.hit {
+      border-left-color: var(--accent);
+      color: #ffffff;
+    }
+    .log-item.warn {
+      border-left-color: var(--alert-orange);
+      color: #ffe0b2;
+    }
+    .log-item.alert {
+      border-left-color: var(--alert-red);
+      color: #ffcdd2;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 14px;
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-subtle);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .ws-indicator {
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+    }
+    .ws-ok {
+      color: var(--accent);
+      background: rgba(0, 245, 255, 0.1);
+      border: 1px solid rgba(0, 245, 255, 0.4);
+    }
+    .ws-err {
+      color: var(--alert-red);
+      background: rgba(255, 49, 98, 0.1);
+      border: 1px solid rgba(255, 49, 98, 0.4);
+    }
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+    }
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="alert-overlay" id="alertOverlay">
+    <div class="alert-modal">
+      <h2>🚨 FIRE ALARM — FAIL‑SAFE ENGAGED</h2>
+      <p style="color:#ffb3c1;font-size:15px;margin:10px 0;">Edge thermal anomaly · All circuits isolated</p>
+      <div class="evac-route" id="evacRoute">
+        ▸ Emergency evacuation active<br>
+        ▸ Nearest exit: <strong>West Wing Stairwell · 120m</strong><br>
+        ▸ Secondary exit: <strong>South Fire Escape · 95m</strong><br>
+        ▸ Elevators locked · Emergency lighting on<br>
+        ▸ All doors released (Fail‑Open)
+      </div>
+      <p style="font-size:10px;color:#ff8a99;margin:10px 0;">Camera‑Free · No facial recognition · Thermal + smoke only</p>
+      <button class="btn-dismiss" onclick="dismissAlert()">🔕 Acknowledge & Reset (Demo)</button>
+    </div>
+  </div>
+
+  <header>
+    <div class="header-left">
+      <h1>Building Mind <span class="ai-badge">AI OS</span></h1>
+      <div class="subtitle">
+        <span class="ai-pulse"></span> Autonomous spatial intelligence · Digital twin control loop · ESG & PropTech
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="live-clock" id="liveClock">--:--:--</span>
+      <span class="badge badge-compliance" id="badgeCompliance">🔒 GDPR / PDPA compliant</span>
+      <span class="badge badge-alert" id="badgeAlert" style="display:none;">🔥 FAIL‑SAFE ACTIVE</span>
+      <div class="btn-row">
+        <button class="demo-btn" onclick="simulateFootstep()">👣 Footstep</button>
+        <button class="demo-btn danger-btn" onclick="triggerFireDemo()">🔥 Fire drill</button>
+        <button class="demo-btn" onclick="simulateMaintenanceAlert()">🔧 Maintenance</button>
+        <button class="demo-btn" onclick="resetAllDemo()">🔄 Reset</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="dashboard-container">
+    <!-- LEFT COLUMN -->
+    <div class="col">
+      <div class="card" id="cardSpatial">
+        <div class="card-title">📍 Sub‑Zone Kinetic Analytics</div>
+        <div class="feature-tags">
+          <span class="feature-tag ai">AI Sub‑Zone Precision</span>
+          <span class="feature-tag">Dwell Time</span>
+          <span class="feature-tag">Peak Prediction</span>
+          <span class="feature-tag">Inclusive Detection</span>
+          <span class="feature-tag">Dynamic Allocation</span>
+        </div>
+        <div class="radar-box" id="radarViewport"><div class="sensor-dot" id="sensorDot"></div></div>
+        <div class="data-row"><span class="lbl">Precision location</span><span class="val" id="uiZone">Core Office [Zone 1-A]</span></div>
+        <div class="data-row"><span class="lbl">Safety status</span><span class="val val-off" id="uiState">STANDBY</span></div>
+        <div class="data-row"><span class="lbl">Inclusive (wheelchair/trolley)</span><span class="val" id="uiInclusive">Zone Vacant</span></div>
+        <div class="data-row"><span class="lbl">Dwell time</span><span class="val" id="uiDwellTime">0 min</span></div>
+        <div class="data-row"><span class="lbl">AI peak hour prediction</span><span class="val" id="uiPeakHour">Tomorrow 09:15–10:45</span></div>
+        <div class="data-row"><span class="lbl">Dynamic space allocation</span><span class="val" id="uiSpaceAlloc">L4 shared meeting available</span></div>
+      </div>
+      <div class="card" id="cardHeatmap">
+        <div class="card-title">🌡️ Zone Utilisation Heatmap (24h)</div>
+        <div class="heatmap-grid" id="heatmapGrid">
+          <div class="heatmap-cell cool">Z1</div><div class="heatmap-cell cool">Z2</div><div class="heatmap-cell warm">Z3</div><div class="heatmap-cell cool">Z4</div>
+          <div class="heatmap-cell hot">Z5</div><div class="heatmap-cell warm">Z6</div><div class="heatmap-cell cool">Z7</div><div class="heatmap-cell cool">Z8</div>
+        </div>
+        <div class="data-row"><span class="lbl">Instant utilisation</span><span class="val" id="uiUtil">12%</span></div>
+      </div>
+    </div>
+
+    <!-- MIDDLE COLUMN -->
+    <div class="col">
+      <div class="card" id="cardTwin">
+        <div class="card-title">🏢 Digital Twin & AI Core</div>
+        <div class="feature-tags">
+          <span class="feature-tag ai">Federated Learning</span>
+          <span class="feature-tag ai">Digital Twin Sim</span>
+        </div>
+        <div class="twin-stage">
+          <div class="twin-building" id="twinBuilding">
+            <div class="twin-roof"></div>
+            <div class="twin-floor f4">L4 · Meeting</div>
+            <div class="twin-floor f3">L3 · Open Plan</div>
+            <div class="twin-floor f2">L2 · Labs</div>
+            <div class="twin-floor f1">L1 · Lobby</div>
+          </div>
+        </div>
+        <div class="data-row"><span class="lbl">Active floor</span><span class="val" id="uiActiveFloor">L3 · Open Plan</span></div>
+        <div class="data-row"><span class="lbl">Federated learning nodes</span><span class="val val-on" id="uiFedLearn">12 nodes · aggregating</span></div>
+      </div>
+      <div class="card" id="cardControls">
+        <div class="card-title">⚡ Proptech Circuit Automation</div>
+        <div class="feature-tags">
+          <span class="feature-tag">Light ON/OFF</span>
+          <span class="feature-tag">HVAC Dynamic</span>
+          <span class="feature-tag">Plug Kill Switch</span>
+          <span class="feature-tag">Fire Fail‑Safe</span>
+        </div>
+        <div class="data-row"><span class="lbl">💡 Lighting (1.5W bar)</span><span class="val val-off" id="uiLight">OFF</span></div>
+        <div class="data-row"><span class="lbl">🌬️ HVAC dynamic adjustment</span><span class="val" id="uiHvac">Eco Saving (26.0°C)</span></div>
+        <div class="data-row"><span class="lbl">🔌 Plug load kill switch</span><span class="val" id="uiPlug">Activated (0W)</span></div>
+        <div class="data-row"><span class="lbl">🧯 Fire alarm fail‑safe</span><span class="val val-off" id="uiFireStatus">STANDBY · Normal</span></div>
+      </div>
+      <div class="terminal-card" id="terminalCard">
+        <div class="terminal-header"><span>📟 DIGITAL TWIN LOG STREAM</span><div class="terminal-dot" id="terminalPulseDot"></div></div>
+        <div class="terminal-stream" id="logViewport">
+          <div class="log-item">[SYSTEM] Building Mind AI OS ready. Waiting for edge events...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="col">
+      <div class="card" id="cardEsg">
+        <div class="card-title">🌱 Real‑Time ESG & Carbon Tracking</div>
+        <div class="feature-tags">
+          <span class="feature-tag ai">Carbon Offsets</span>
+          <span class="feature-tag">NILM Anomaly</span>
+          <span class="feature-tag">Circuit Audit</span>
+          <span class="feature-tag">Tenant Billing</span>
+        </div>
+        <div class="data-row" style="background:rgba(0,245,255,0.05);border-color:rgba(0,245,255,0.12);">
+          <span class="lbl">Edge carbon offsets</span><span class="val val-on" id="uiCarbon">14.250 kg CO₂</span>
+        </div>
+        <div class="data-row"><span class="lbl">NILM anomaly detection</span><span class="val" id="uiAnomaly">Leakage Prevented</span></div>
+        <div class="data-row"><span class="lbl">Circuit‑level waste audit</span><span class="val val-on" id="uiCircuitAudit">0.0W leak · 100% healthy</span></div>
+        <div class="data-row"><span class="lbl">Per‑tenant energy billing</span><span class="val" id="uiTenantBilling">A: ¥3.42 | B: ¥1.89</span></div>
+      </div>
+      <div class="card" id="cardMaintenance">
+        <div class="card-title">🔧 Predictive Maintenance</div>
+        <div class="feature-tags">
+          <span class="feature-tag">Filter Alert</span>
+          <span class="feature-tag">NILM Breakdown</span>
+          <span class="feature-tag">Structural Health</span>
+        </div>
+        <div class="data-row"><span class="lbl">Filter blockage alert</span><span class="val" id="uiFilterAlert">Normal · ΔP 12Pa</span></div>
+        <div class="data-row"><span class="lbl">NILM appliance breakdown</span><span class="val" id="uiNilmBreakdown">AC 42% · Light 18% · Plugs 40%</span></div>
+        <div class="data-row"><span class="lbl">Structural health monitoring</span><span class="val val-on" id="uiStructural">Vibration 0.02g · safe</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🛡️ Compliance & Security (AI enforced)</div>
+        <div class="feature-tags">
+          <span class="feature-tag ai">GDPR/PDPA Auto</span>
+          <span class="feature-tag">Camera‑Free Alerts</span>
+          <span class="feature-tag">Evacuation Guide</span>
+          <span class="feature-tag">Audit‑Ready</span>
+        </div>
+        <div class="data-row"><span class="lbl">GDPR/PDPA automatic</span><span class="val val-on">Active · No biometrics</span></div>
+        <div class="data-row"><span class="lbl">Camera‑free security alerts</span><span class="val">Thermal + presence only</span></div>
+        <div class="data-row"><span class="lbl">Emergency evacuation guide</span><span class="val">AI‑optimized routes ready</span></div>
+        <div class="data-row"><span class="lbl">Audit‑ready by default</span><span class="val val-on">Logs immutable · compliant</span></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>Gateway: <span class="ws-indicator ws-err" id="wsStatus">🔴 Connecting...</span></div>
+    <div id="footerInfo">Digital Twin · NILM · Federated Learning · Structural Health · Edge Sensing</div>
+    <div>Audit‑ready · No cameras · No biometrics</div>
+  </footer>
+
+  <script>
+    (function() {
+      const WS_URL = 'ws://127.0.0.1:8765';
+      let ws = null;
+      let isLightOn = false;
+      let isFireAlert = false;
+      let totalCarbonSaved = 14.250;
+      let dwellSeconds = 0;
+      let dwellInterval = null;
+      let autoSimInterval = null;
+
+      const $ = (s) => document.querySelector(s);
+      const domCardSpatial = $('#cardSpatial');
+      const domCardControls = $('#cardControls');
+      const domCardEsg = $('#cardEsg');
+      const domCardTwin = $('#cardTwin');
+      const domCardMaintenance = $('#cardMaintenance');
+      const domRadarViewport = $('#radarViewport');
+      const domSensorDot = $('#sensorDot');
+      const domLogViewport = $('#logViewport');
+      const domAlertOverlay = $('#alertOverlay');
+      const domBadgeAlert = $('#badgeAlert');
+      const domBadgeCompliance = $('#badgeCompliance');
+      const domTwinBuilding = $('#twinBuilding');
+      const domHeatmapGrid = $('#heatmapGrid');
+      const domWsStatus = $('#wsStatus');
+      const domLiveClock = $('#liveClock');
+      const domTerminalPulseDot = $('#terminalPulseDot');
+
+      const uiZone = $('#uiZone');
+      const uiState = $('#uiState');
+      const uiInclusive = $('#uiInclusive');
+      const uiDwellTime = $('#uiDwellTime');
+      const uiLight = $('#uiLight');
+      const uiHvac = $('#uiHvac');
+      const uiPlug = $('#uiPlug');
+      const uiFireStatus = $('#uiFireStatus');
+      const uiCarbon = $('#uiCarbon');
+      const uiAnomaly = $('#uiAnomaly');
+      const uiCircuitAudit = $('#uiCircuitAudit');
+      const uiTenantBilling = $('#uiTenantBilling');
+      const uiUtil = $('#uiUtil');
+      const uiPeakHour = $('#uiPeakHour');
+      const uiActiveFloor = $('#uiActiveFloor');
+      const uiSpaceAlloc = $('#uiSpaceAlloc');
+      const uiFedLearn = $('#uiFedLearn');
+      const uiFilterAlert = $('#uiFilterAlert');
+      const uiNilmBreakdown = $('#uiNilmBreakdown');
+      const uiStructural = $('#uiStructural');
+
+      function pushLog(text, cls = '') {
+        const item = document.createElement('div');
+        item.className = `log-item ${cls}`;
+        const ts = new Date().toLocaleTimeString('en-US', { hour12: false });
+        item.innerText = `[${ts}] ${text}`;
+        domLogViewport.appendChild(item);
+        domLogViewport.scrollTop = domLogViewport.scrollHeight;
+        while (domLogViewport.children.length > 100) domLogViewport.removeChild(domLogViewport.firstChild);
+      }
+
+      function spawnRipple() {
+        const ripple = document.createElement('div');
+        ripple.className = 'ripple-ring go';
+        domRadarViewport.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 850);
+      }
+
+      function updateClock() {
+        const now = new Date();
+        domLiveClock.innerText = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit',
+          minute: '2-digit', second: '2-digit' }) + ' UTC';
+      }
+
+      function setActiveState(active) {
+        isLightOn = active;
+        const cards = [domCardSpatial, domCardControls, domCardEsg, domCardTwin];
+        cards.forEach(c => {
+          if (active && !isFireAlert) c.classList.add('active-highlight');
+          else c.classList.remove('active-highlight');
+        });
+
+        if (active) {
+          domSensorDot.style.background = 'var(--accent)';
+          domSensorDot.style.borderColor = '#ffffff';
+          domSensorDot.style.boxShadow = '0 0 48px var(--accent), 0 0 90px var(--accent-glow)';
+          uiState.innerText = 'ACTIVE (occupancy)';
+          uiState.className = 'val val-on';
+          uiLight.innerText = 'ENGAGED (relay on)';
+          uiLight.className = 'val val-on';
+          uiHvac.innerText = 'Active (22.5°C) · high efficiency';
+          uiPlug.innerText = 'Desks 1-8: engaged (320W)';
+          uiInclusive.innerText = 'Pedestrian / mobility aid detected';
+          uiUtil.innerText = '84% (spatial peak)';
+          uiActiveFloor.innerText = 'L3 · Open Plan 🔥';
+          uiSpaceAlloc.innerText = 'L4 kept · high demand';
+          highlightTwinFloor('f3');
+          updateHeatmapHotZone(4);
+          if (!dwellInterval) {
+            dwellSeconds = 0;
+            dwellInterval = setInterval(() => {
+              dwellSeconds++;
+              const m = Math.floor(dwellSeconds / 60);
+              const s = dwellSeconds % 60;
+              uiDwellTime.innerText = `${m}min ${s}s`;
+            }, 1000);
+          }
+          pushLog('⚙️ [STATE] Occupied → relay activated.', 'hit');
+        } else {
+          domSensorDot.style.background = '#1f3050';
+          domSensorDot.style.borderColor = '#4d658a';
+          domSensorDot.style.boxShadow = 'none';
+          uiState.innerText = 'STANDBY';
+          uiState.className = 'val val-off';
+          uiLight.innerText = 'OFF';
+          uiLight.className = 'val val-off';
+          uiHvac.innerText = 'Eco Saving (26.0°C)';
+          uiPlug.innerText = 'Plug kill‑switch active (0W)';
+          uiInclusive.innerText = 'Zone Vacant';
+          uiUtil.innerText = '12% (standby)';
+          uiActiveFloor.innerText = 'L3 · Open Plan (idle)';
+          uiSpaceAlloc.innerText = 'L4 shared meeting available';
+          highlightTwinFloor(null);
+          updateHeatmapHotZone(-1);
+          if (dwellInterval) {
+            clearInterval(dwellInterval);
+            dwellInterval = null;
+            dwellSeconds = 0;
+            uiDwellTime.innerText = '0 min';
+          }
+          pushLog('⚙️ [STATE] Vacant → eco cutoff.', '');
+        }
+      }
+
+      function highlightTwinFloor(floorClass) {
+        const floors = domTwinBuilding.querySelectorAll('.twin-floor');
+        floors.forEach(f => f.classList.remove('highlight-floor'));
+        if (floorClass) {
+          const target = domTwinBuilding.querySelector(`.${floorClass}`);
+          if (target) target.classList.add('highlight-floor');
+        }
+      }
+
+      function updateHeatmapHotZone(zoneIdx) {
+        const cells = domHeatmapGrid.querySelectorAll('.heatmap-cell');
+        cells.forEach((c, i) => {
+          c.classList.remove('hot', 'warm', 'cool');
+          if (i === zoneIdx) c.classList.add('hot');
+          else if (Math.abs(i - zoneIdx) === 1 && zoneIdx >= 0) c.classList.add('warm');
+          else c.classList.add('cool');
+        });
+      }
+
+      function triggerFireDemo() {
+        if (isFireAlert) return;
+        isFireAlert = true;
+        domAlertOverlay.classList.add('active');
+        domBadgeAlert.style.display = 'inline-block';
+        domBadgeCompliance.style.display = 'none';
+        document.querySelectorAll('.card').forEach(c => {
+          c.classList.add('alert-highlight');
+          c.classList.remove('active-highlight');
+        });
+        domTerminalPulseDot.style.background = 'var(--alert-red)';
+        domTerminalPulseDot.style.boxShadow = '0 0 20px var(--alert-red)';
+        uiFireStatus.innerText = '🔥 FAIL‑SAFE ENGAGED · circuits off';
+        uiFireStatus.className = 'val val-alert';
+        uiLight.innerText = 'EMERGENCY CUTOFF';
+        uiLight.className = 'val val-alert';
+        uiHvac.innerText = 'FIRE MODE: smoke extraction on';
+        uiPlug.innerText = 'All circuits isolated (0W · safe)';
+        uiState.innerText = 'FIRE ALARM · evacuating';
+        uiState.className = 'val val-alert';
+        pushLog('🚨 [FIRE-SAFE] Thermal anomaly! Full circuit isolation · evacuation activated.', 'alert');
+        pushLog(
+          '🚨 [EVACUATION] West Wing Stairwell 120m | South Fire Escape 95m | all doors released', 'alert');
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ event: 'fire_alarm_triggered', time: new Date().toISOString() }));
+        }
+      }
+
+      function dismissAlert() {
+        if (!isFireAlert) return;
+        isFireAlert = false;
+        domAlertOverlay.classList.remove('active');
+        domBadgeAlert.style.display = 'none';
+        domBadgeCompliance.style.display = 'inline-block';
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('alert-highlight'));
+        domTerminalPulseDot.style.background = 'var(--accent)';
+        domTerminalPulseDot.style.boxShadow = '0 0 14px var(--accent)';
+        uiFireStatus.innerText = 'STANDBY · Normal';
+        uiFireStatus.className = 'val val-off';
+        pushLog('✅ [FIRE-SAFE] Alarm cleared · system reset · circuits restored.', '');
+        setActiveState(isLightOn);
+      }
+
+      function simulateFootstep() {
+        if (isFireAlert) return;
+        spawnRipple();
+        if (!isLightOn) setActiveState(true);
+        const rssi = -45 - Math.floor(Math.random() * 25);
+        pushLog(`⚡ [BLE INTERRUPT] Hardware pulse! RSSI: ${rssi}dBm · spatial wave.`, 'hit');
+        totalCarbonSaved += 0.001;
+        uiCarbon.innerText = `${totalCarbonSaved.toFixed(3)} kg CO₂`;
+        const zones = ['Core Office [Zone 1-A]', 'Meeting Room [Zone 2-B]', 'Corridor [Zone 3-C]',
+          'Lobby [Zone 1-A]'
+        ];
+        uiZone.innerText = zones[Math.floor(Math.random() * zones.length)];
+      }
+
+      function simulateMaintenanceAlert() {
+        if (isFireAlert) return;
+        uiFilterAlert.innerText = '⚠️ Warning · ΔP 38Pa (>30Pa)';
+        uiFilterAlert.className = 'val val-warn';
+        uiNilmBreakdown.innerText = 'AC 46% · Light 15% · anomaly 39% ⚠️';
+        uiStructural.innerText = 'Vibration 0.08g · nearing threshold';
+        uiStructural.className = 'val val-warn';
+        pushLog('🔧 [PREDICTIVE] HVAC filter pressure high · replacement advised', 'warn');
+        pushLog('🔧 [NILM] Unusual appliance signature · possible aging compressor', 'warn');
+        domCardMaintenance.classList.add('active-highlight');
+        setTimeout(() => {
+          domCardMaintenance.classList.remove('active-highlight');
+          if (!isFireAlert) {
+            uiFilterAlert.innerText = 'Normal · ΔP 12Pa';
+            uiFilterAlert.className = 'val';
+            uiNilmBreakdown.innerText = 'AC 42% · Light 18% · Plugs 40%';
+            uiStructural.innerText = 'Vibration 0.02g · safe';
+            uiStructural.className = 'val val-on';
+          }
+        }, 8000);
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ event: 'maintenance_alert', type: 'filter_blockage',
+            pressure_pa: 38 }));
+        }
+      }
+
+      function resetAllDemo() {
+        if (isFireAlert) dismissAlert();
+        setActiveState(false);
+        totalCarbonSaved = 14.250;
+        uiCarbon.innerText = `${totalCarbonSaved.toFixed(3)} kg CO₂`;
+        uiZone.innerText = 'Core Office [Zone 1-A]';
+        uiFilterAlert.innerText = 'Normal · ΔP 12Pa';
+        uiFilterAlert.className = 'val';
+        uiNilmBreakdown.innerText = 'AC 42% · Light 18% · Plugs 40%';
+        uiStructural.innerText = 'Vibration 0.02g · safe';
+        uiStructural.className = 'val val-on';
+        uiTenantBilling.innerText = 'A: ¥3.42 | B: ¥1.89';
+        uiPeakHour.innerText = 'Tomorrow 09:15–10:45';
+        uiFedLearn.innerText = '12 nodes · aggregating';
+        uiFedLearn.className = 'val val-on';
+        uiCircuitAudit.innerText = '0.0W leak · 100% healthy';
+        uiCircuitAudit.className = 'val val-on';
+        uiAnomaly.innerText = 'Leakage Prevented';
+        domCardMaintenance.classList.remove('active-highlight');
+        updateHeatmapHotZone(-1);
+        highlightTwinFloor(null);
+        domLogViewport.innerHTML =
+          '<div class="log-item">[SYSTEM] Demo reset · waiting for events...</div>';
+        pushLog('🔄 [RESET] All demo states restored.', '');
+      }
+
+      // ═══════════ 关键修复：将函数挂载到 window 对象，使 onclick 可以访问 ═══════════
+      window.simulateFootstep = simulateFootstep;
+      window.triggerFireDemo = triggerFireDemo;
+      window.simulateMaintenanceAlert = simulateMaintenanceAlert;
+      window.resetAllDemo = resetAllDemo;
+      window.dismissAlert = dismissAlert;
+
+      function startAutoSim() {
+        autoSimInterval = setInterval(() => {
+          if (!isLightOn && !isFireAlert) {
+            totalCarbonSaved += 0.003;
+            uiCarbon.innerText = `${totalCarbonSaved.toFixed(3)} kg CO₂`;
+          }
+          const ta = (3.40 + Math.random() * 0.2).toFixed(2);
+          const tb = (1.85 + Math.random() * 0.15).toFixed(2);
+          uiTenantBilling.innerText = `A: ¥${ta} | B: ¥${tb}`;
+          const nodes = 10 + Math.floor(Math.random() * 5);
+          uiFedLearn.innerText = `${nodes} nodes · aggregating`;
+          uiFedLearn.className = 'val val-on';
+        }, 5000);
+      }
+
+      function connectWS() {
+        ws = new WebSocket(WS_URL);
+        ws.onopen = () => {
+          domWsStatus.innerText = '🟢 ACTIVE GATEWAY';
+          domWsStatus.className = 'ws-indicator ws-ok';
+          domTerminalPulseDot.style.background = 'var(--accent)';
+          domTerminalPulseDot.style.boxShadow = '0 0 14px var(--accent)';
+          pushLog('[GATEWAY] Handshake success · IPv4 tunnel established.', '');
+        };
+        ws.onclose = () => {
+          domWsStatus.innerText = '🔴 DISCONNECTED';
+          domWsStatus.className = 'ws-indicator ws-err';
+          domTerminalPulseDot.style.background = '#6b7c99';
+          domTerminalPulseDot.style.boxShadow = 'none';
+          pushLog('[GATEWAY] Tunnel closed · retrying...', '');
+          setTimeout(connectWS, 3000);
+        };
+        ws.onerror = () => {
+          domWsStatus.innerText = '🚨 LINK FAILED';
+          domWsStatus.className = 'ws-indicator ws-err';
+        };
+        ws.onmessage = (e) => {
+          try {
+            const data = JSON.parse(e.data);
+            if (data.event === 'footstep') {
+              spawnRipple();
+              if (!isLightOn && !isFireAlert) setActiveState(true);
+              pushLog(`⚡ [BLE INTERRUPT] RSSI: ${data.rssi || '?'}dBm`, 'hit');
+              return;
+            }
+            if (data.carbon_update) {
+              totalCarbonSaved = parseFloat(data.carbon_update) || totalCarbonSaved;
+              uiCarbon.innerText = data.carbon_update;
+              return;
+            }
+            if (data.state === 'ON' && !isFireAlert) setActiveState(true);
+            else if (data.state === 'OFF' && !isFireAlert) setActiveState(false);
+            if (data.inclusive) uiInclusive.innerText = data.inclusive;
+            if (data.hvac) uiHvac.innerText = data.hvac;
+            if (data.plug_load) uiPlug.innerText = data.plug_load;
+            if (data.carbon_saved) uiCarbon.innerText = data.carbon_saved;
+            if (data.utilisation) uiUtil.innerText = data.utilisation;
+            if (data.anomaly) uiAnomaly.innerText = data.anomaly;
+            if (data.event === 'fire_alarm' && !isFireAlert) triggerFireDemo();
+            if (data.event === 'fire_alarm_clear' && isFireAlert) dismissAlert();
+            if (data.event === 'maintenance_alert') simulateMaintenanceAlert();
+            if (data.dwell_time_update) uiDwellTime.innerText = data.dwell_time_update;
+            if (data.peak_hour_prediction) uiPeakHour.innerText = data.peak_hour_prediction;
+            if (data.tenant_billing) uiTenantBilling.innerText = data.tenant_billing;
+            if (data.space_allocation) uiSpaceAlloc.innerText = data.space_allocation;
+          } catch (err) {
+            console.warn('WS parse error', err);
+          }
+        };
+      }
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'f' && !e.ctrlKey && !e.metaKey) simulateFootstep();
+        if (e.key === 'a' && !e.ctrlKey && !e.metaKey && !isFireAlert) triggerFireDemo();
+        if (e.key === 'm' && !e.ctrlKey && !e.metaKey) simulateMaintenanceAlert();
+        if (e.key === 'r' && !e.ctrlKey && !e.metaKey) resetAllDemo();
+        if (e.key === 'Escape' && isFireAlert) dismissAlert();
+      });
+
+      updateClock();
+      setInterval(updateClock, 1000);
+      connectWS();
+      startAutoSim();
+      pushLog('[SYSTEM] Building Mind AI OS v2.0 · dashboard ready.', '');
+      pushLog('[SYSTEM] Demos: F=footstep A=fire M=maintenance R=reset Esc=dismiss', '');
+      pushLog('[COMPLIANCE] GDPR/PDPA · camera‑free · no biometrics · audit‑ready', '');
+    })();
+  </script>
+</body>
+</html>
