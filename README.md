@@ -10,7 +10,7 @@
 1. Install dependencies: `pip install -r requirements.txt`
 2. Run gateway: `python test.py`
 3. Open `test.html` in any modern browser
-4. Trigger footstep via BLE sensor or press 'F' key for demo
+4. Trigger footstep via BLE sensor or press 'F' key
 
 ### Key Features Demonstrated
 - Layer 1: Real-time automation (lighting, HVAC, plug kill-switch)
