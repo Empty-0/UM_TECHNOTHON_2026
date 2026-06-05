@@ -8,7 +8,7 @@
 
 ### Quick Start
 1. Install dependencies: `pip install -r requirements.txt`
-2. Run gateway: `python gateway.py`
+2. Run gateway: `python test.py`
 3. Open `dashboard.html` in any modern browser
 4. Trigger footstep via BLE sensor or press 'F' key for demo
 
