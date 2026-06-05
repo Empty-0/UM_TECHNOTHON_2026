@@ -3,13 +3,13 @@
 ## BuildingMind AI OS · Digital Prototype
 
 ### System Architecture
-- **dashboard.html** — Real-time ESG & PropTech intelligent dashboard (WebSocket client)
-- **gateway.py** — BLE sensor gateway + WebSocket server + serial relay control
+- **index.html** — Real-time ESG & PropTech intelligent dashboard (WebSocket client)
+- **test.py** — BLE sensor gateway + WebSocket server + serial relay control
 
 ### Quick Start
 1. Install dependencies: `pip install -r requirements.txt`
 2. Run gateway: `python test.py`
-3. Open `test.html` in any modern browser
+3. Open `index.html` in any modern browser
 4. Trigger footstep via BLE sensor or press 'F' key
 
 ### Key Features Demonstrated
